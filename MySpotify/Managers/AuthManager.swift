@@ -22,7 +22,7 @@ final class AuthManager {
     public var signInURL: URL? {
         let state = UUID().uuidString
         UserDefaults.standard.set(state, forKey: "spotify_auth_state")
-        let scopes = "user-read-private user-read-email"
+        let scopes = "user-read-private%20user-read-email%20playlist-read-private%20playlist-modify-public%20playlist-modify-private%20user-follow-read%20user-library-modify%20user-library-read"
         let base = "https://accounts.spotify.com/authorize"
         let urlString = "\(base)?response_type=code&client_id=\(Constraints.clientID)&scope=\(scopes)&redirect_uri=\(Constraints.redirectURI)&state=\(state)&show_dialog=TRUE"
         return URL(string: urlString)
@@ -150,7 +150,9 @@ final class AuthManager {
     
     public func cacheToken(result: AuthResponse) {
         UserDefaults.standard.setValue(result.access_token, forKey: "access_token")
-        UserDefaults.standard.setValue(result.refresh_token, forKey: "refresh_token")
+        if let refresh_token = result.refresh_token {
+            UserDefaults.standard.setValue(result.refresh_token, forKey: "refresh_token")
+        }
         UserDefaults.standard.setValue(Date().addingTimeInterval(TimeInterval(result.expires_in)), forKey: "expirationDate")
     }
 }
